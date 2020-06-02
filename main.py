@@ -4,13 +4,15 @@ import matplotlib.pyplot as plt
 from numpy.random import choice
 import time
 import numpy as np
+import statistics
 
-NB_NODE_MAX = 10000
+
+NB_NODE_MAX = 3000
 CENTRALISATION_MAX = (NB_NODE_MAX/2)
 NB_LONG_MAX = 100
 
-NB_ESSAIS = 300
-NB_FOURMI = 200
+NB_ESSAIS = 10
+NB_FOURMI = 70
 node_arrive = 19
 node_depart = 1
 G = nx.Graph()
@@ -27,7 +29,10 @@ def init():
 
 
 def lancer():
-
+    taille_chemin = []
+    yAxis = []
+    xAxis = []
+    boucle = 0
     for i in range(NB_ESSAIS):
         for j in range(NB_FOURMI):
             node = node_depart
@@ -39,9 +44,23 @@ def lancer():
                 nodes_parcourus.append(node)
             if node == node_arrive:
                 deposer_pheromone(nodes_parcourus)
+                taille_chemin.append(len(nodes_parcourus))
+        if(len(taille_chemin) > 0):
+            yAxis.append(statistics.mean(taille_chemin))
+            taille_chemin = []
+            xAxis.append(boucle)
+            boucle = boucle + 1
         evaporer()
     # print(G.edges.data())
     afficher_parcours_optimal()
+    fig, ax1 = plt.subplots()
+
+    ax1.set_xlabel('Génération')
+    #ax1.set_ylabel('exp', color=color)
+    ax1.plot(xAxis, yAxis, color='tab:red',
+             label='Taille moyenne du parcours de la génération')
+    ax1.legend()
+    plt.show()
     # plt.show()
 
 
